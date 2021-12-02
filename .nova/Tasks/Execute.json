@@ -1,0 +1,10 @@
+{
+  "actions" : {
+    "run" : {
+      "enabled" : true,
+      "path" : "run.sh"
+    }
+  },
+  "identifier" : "BC589647-0C5C-45CD-A4D1-74E532ABD497",
+  "openLogOnRun" : "start"
+}
