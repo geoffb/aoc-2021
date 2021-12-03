@@ -1,6 +1,6 @@
 -- https://adventofcode.com/2021/day/2
 
-local util = require("lib/util")
+local string = require("lib/string")
 
 local input = io.lines(arg[1])
 
@@ -16,7 +16,7 @@ local position2 = {
 }
 
 for line in input do
-	local command = util.split_words(line)
+	local command = string.split_words(line)
 	local dir = command[1]
 	local value = tonumber(command[2])
 	if dir == "forward" then
