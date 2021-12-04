@@ -95,7 +95,6 @@ for i, ball in ipairs(balls) do
 				local score = score_board(board)
 				board.score = score * ball
 				table.insert(winning_order, board_ordinal)
-				print("BINGO: board=" .. board_ordinal .. ", score=" .. score .. ", ball=" .. ball)
 			end
 		end
 	end
