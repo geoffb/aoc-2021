@@ -2,13 +2,15 @@
 
 local fs = require("lib/fs")
 
+-- Size of the boards, in cells
 local board_size = 5
 
 -- Parse board data from input lines starting at a given line position
 function parse_board(lines, position)
 	local board = {
 		values = {},
-		marks = {}
+		marks = {},
+		score = nil
 	}
 	for y = position, position + board_size - 1, 1 do
 		for x = 1, board_size * 3, 3 do
@@ -32,12 +34,14 @@ end
 
 -- Check a set of marks for a winning position
 function check_marks(marks, stride, run)
-	for i = 1, #marks, stride do
-		for j = i, i + board_size - 1, run do
-			if marks[j] == 0 then
+	for i = 1, board_size, 1 do
+		local start = 1 + ((i - 1) * stride)
+		for j = 1, board_size, 1 do
+			local index = start + ((j - 1) * run)
+			if marks[index] == 0 then
 				break
 			end
-			if j - i == board_size - 1 then
+			if j == board_size then
 				return true
 			end
 		end
@@ -79,25 +83,32 @@ for i = 3, #lines, 6 do
 	table.insert(boards, parse_board(lines, i))
 end
 
--- "Draw" balls until a winning board in found
-local winning_board = nil
-local winning_score = nil
+-- "Draw" balls until all winning boards have been found
+local winning_order = {}
 for i, ball in ipairs(balls) do
 	-- Mark and check boards for winning positions
-	for _, board in ipairs(boards) do
-		mark_board(board, ball)
-		if check_board(board) then
-			winning_board = board
-			break
+	for board_ordinal, board in ipairs(boards) do
+		if board.score == nil then
+			mark_board(board, ball)
+			if check_board(board) then
+				-- This board has won
+				local score = score_board(board)
+				board.score = score * ball
+				table.insert(winning_order, board_ordinal)
+				print("BINGO: board=" .. board_ordinal .. ", score=" .. score .. ", ball=" .. ball)
+			end
 		end
 	end
 
-	-- If a winning board was found, determine the score
-	if winning_board ~= nil then
-		local sum = score_board(winning_board)
-		winning_score = sum * ball
+	-- Exit when all boards have won
+	if #winning_order >= #boards then
 		break
 	end
 end
 
-print("Day 4, Part 1: " .. winning_score)
+-- Get winning and losing boards
+local winner = boards[winning_order[1]]
+local loser = boards[winning_order[#winning_order]]
+
+print("Day 4, Part 1: " .. winner.score)
+print("Day 4, Part 2: " .. loser.score)
